@@ -47,10 +47,14 @@ func main() {
 	mux.HandleFunc("/api/convert", handler.ConvertSubscription)
 
 	log.Printf("Starting %s v%s on %s", appName, appVersion, addr)
+	log.Printf("Health check available at http://%s/health", addr)
 
 	server := &http.Server{
-		Addr:    addr,
-		Handler: mux,
+		Addr:         addr,
+		Handler:      mux,
+		ReadTimeout:  30 * 1e9, // 30 seconds in nanoseconds (time.Duration)
+		WriteTimeout: 30 * 1e9,
+		IdleTimeout:  60 * 1e9,
 	}
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
