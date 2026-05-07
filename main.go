@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/sub2api/sub2api/handler"
 )
@@ -49,14 +50,12 @@ func main() {
 	log.Printf("Starting %s v%s on %s", appName, appVersion, addr)
 	log.Printf("Health check available at http://%s/health", addr)
 
-	// Using time.Duration constants would be cleaner, but keeping explicit nanosecond
-	// values here so there's no extra import needed. 30s read/write, 120s idle.
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      mux,
-		ReadTimeout:  30 * 1e9,  // 30 seconds in nanoseconds (time.Duration)
-		WriteTimeout: 30 * 1e9,
-		IdleTimeout:  120 * 1e9, // bumped from 60s to 120s to keep connections alive longer
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  120 * time.Second, // bumped from 60s to 120s to keep connections alive longer
 	}
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
